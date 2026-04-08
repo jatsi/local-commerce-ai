@@ -1,9 +1,9 @@
-from apps.api_gateway.app.tasks.celery_app import celery_app
-import apps.api_gateway.app.tasks.job_tasks  # noqa: F401
+from celery import Celery
+from apps.api_gateway.app.settings import settings
 
-if __name__ == "__main__":
-    celery_app.worker_main([
-        "worker",
-        "--loglevel=INFO",
-        "--pool=solo",
-    ])
+celery_app = Celery(
+    "local_commerce_ai",
+    broker=settings.celery_broker_url,
+    backend=settings.celery_result_backend,
+)
+celery_app.autodiscover_tasks(["apps.worker"])

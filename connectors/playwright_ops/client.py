@@ -1,3 +1,4 @@
-class Client:
-    def run(self, payload: dict) -> dict:
-        return {"status": "stub", "payload": payload}
+class PlaywrightClient:
+    def scrape(self, url: str) -> dict:
+        # stub_ready. Replace with real async Playwright flow.
+        return {"url": url, "title": "stub competitor", "price": 0, "status": "scraped_stub"}

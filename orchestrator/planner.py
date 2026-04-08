@@ -1,24 +1,24 @@
-def build_plan(job: dict) -> dict:
-    task_type = job.get("task_type", "unknown")
-    context = job.get("context", {})
-    constraints = job.get("constraints", {})
+from dataclasses import dataclass
 
-    if task_type == "publish_product":
-        return {
-            "steps": [
-                {"agent": "catalog_agent", "action": "build_master_record", "context": context, "constraints": constraints},
-                {"agent": "compliance_agent", "action": "pre_publish_review", "context": {"require_approval": constraints.get("require_approval", True)}},
-                {"agent": "shopify_agent", "action": "create_draft", "context": context, "constraints": constraints},
-                {"agent": "etsy_agent", "action": "create_draft", "context": context, "constraints": constraints},
-            ]
-        }
 
-    if task_type == "sync_product_channels":
-        return {
-            "steps": [
-                {"agent": "shopify_agent", "action": "sync_product", "context": context, "constraints": constraints},
-                {"agent": "etsy_agent", "action": "sync_product", "context": context, "constraints": constraints},
-            ]
-        }
+@dataclass
+class PlanStep:
+    order: int
+    agent: str
+    action: str
 
-    return {"steps": [{"agent": "catalog_agent", "action": "noop", "context": context, "constraints": constraints}]}
+
+class Planner:
+    BASE_FLOW = [
+        "catalog",
+        "content",
+        "compliance",
+        "shopify",
+        "etsy",
+        "web",
+        "ads",
+        "analytics",
+    ]
+
+    def build(self, job_name: str) -> list[PlanStep]:
+        return [PlanStep(order=i + 1, agent=a, action=f"{job_name}:{a}") for i, a in enumerate(self.BASE_FLOW)]

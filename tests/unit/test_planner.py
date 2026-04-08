@@ -1,7 +1,7 @@
-from orchestrator.planner import build_plan
+from orchestrator.planner import Planner
 
-def test_publish_plan_contains_shopify_and_etsy():
-    plan = build_plan({"task_type": "publish_product", "context": {}, "constraints": {}})
-    agents = [step["agent"] for step in plan["steps"]]
-    assert "shopify_agent" in agents
-    assert "etsy_agent" in agents
+
+def test_planner_builds_required_agents() -> None:
+    plan = Planner().build("launch")
+    agents = [step.agent for step in plan]
+    assert agents == ["catalog", "content", "compliance", "shopify", "etsy", "web", "ads", "analytics"]

@@ -1,14 +1,12 @@
-from connectors.etsy.client import EtsyConnector
+from agents.base import BaseAgent
+from connectors.etsy.client import EtsyClient
 
-class EtsyAgent:
-    def __init__(self):
-        self.client = EtsyConnector()
 
-    def run(self, step: dict) -> dict:
-        if step.get("action") == "create_draft":
-            return self.client.create_draft_listing({
-                "title": "Draft Etsy Listing",
-                "state": "draft",
-                "source": "etsy_agent"
-            })
-        return {"agent": "etsy_agent", "status": "noop"}
+class EtsyAgent(BaseAgent):
+    name = "etsy"
+
+    def __init__(self) -> None:
+        self.client = EtsyClient()
+
+    def run(self, context: dict) -> dict:
+        return {"etsy": self.client.publish_listing(context)}

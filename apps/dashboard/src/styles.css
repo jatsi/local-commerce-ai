@@ -1,0 +1,5 @@
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+article { background: #1e293b; border-radius: 12px; padding: 1rem; }
+ul { background: #1e293b; border-radius: 12px; padding: 1rem 1.5rem; }
