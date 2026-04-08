@@ -1,9 +1,6 @@
 FROM python:3.11-slim
-
 WORKDIR /app
-COPY requirements.txt .
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . /app
-ENV PYTHONPATH=/app
-CMD ["python", "-m", "apps.scheduler.main"]
+COPY . .
+CMD ["celery", "-A", "apps.worker.main.celery_app", "beat", "--loglevel=INFO"]

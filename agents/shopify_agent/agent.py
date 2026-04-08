@@ -1,14 +1,12 @@
-from connectors.shopify.client import ShopifyConnector
+from agents.base import BaseAgent
+from connectors.shopify.client import ShopifyClient
 
-class ShopifyAgent:
-    def __init__(self):
-        self.client = ShopifyConnector()
 
-    def run(self, step: dict) -> dict:
-        if step.get("action") == "create_draft":
-            return self.client.create_product({
-                "title": "Draft Shopify Product",
-                "status": "draft",
-                "source": "shopify_agent"
-            })
-        return {"agent": "shopify_agent", "status": "noop"}
+class ShopifyAgent(BaseAgent):
+    name = "shopify"
+
+    def __init__(self) -> None:
+        self.client = ShopifyClient()
+
+    def run(self, context: dict) -> dict:
+        return {"shopify": self.client.upsert_product(context)}

@@ -1,91 +1,49 @@
-# Local Commerce AI Base — siguiente capa
+# Local Commerce AI (Multiagente local)
 
-Esta versión agrega:
+Sistema modular multiagente para operar Shopify, Etsy, web propia, scraping de competencia, generación de contenido local (Ollama), ads y analytics.
 
-- persistencia real inicial con **SQLAlchemy 2.0**
-- cola de jobs con **Celery + Redis**
-- endpoints para jobs, approvals y products
-- modelos de base de datos iniciales
-- conectores Shopify y Etsy en modo **stub_ready**
-- arranque automático de tablas al iniciar la API
+## Stack
+- Python 3.11
+- FastAPI
+- SQLAlchemy 2.0 + Alembic
+- PostgreSQL
+- Redis + Celery
+- Qdrant
+- Ollama
+- Playwright
+- httpx
+- Docker Compose
+- React dashboard interno
 
-## Componentes nuevos
+## Arquitectura
+- **API Gateway**: FastAPI con endpoints de jobs, aprobaciones y dashboard.
+- **Orquestador**: planifica y ejecuta pasos por agentes.
+- **Agentes**: catalog, content, shopify, etsy, web, competitor, ads, analytics, compliance.
+- **Conectores**: Shopify, Etsy, web CMS, Google Ads, Meta Ads, Playwright, Ollama, Qdrant.
+- **Persistencia**: tablas requeridas y auditoría.
+- **Aprobaciones humanas**: gate por políticas.
+- **Policy engine**: evaluación de riesgo y compliance.
+- **RAG**: recuperación contextual en Qdrant para contenido.
+- **Scraping**: Playwright vía conector encapsulado.
+- **Dashboard**: React para estado de jobs/aprobaciones.
 
-### Base de datos
-Modelos incluidos:
-
-- `jobs`
-- `approvals`
-- `products_master`
-- `product_channel_versions`
-
-### Cola de jobs
-La API ya no procesa el job directamente. Ahora:
-
-1. crea el job en PostgreSQL
-2. lo encola en Celery
-3. el worker lo procesa
-4. el resultado vuelve a la tabla `jobs`
-
-### Integración inicial Shopify
-El conector deja preparado el payload para `productCreate` en GraphQL Admin API.
-
-### Integración inicial Etsy
-El conector deja preparado el payload para el endpoint base de listings de Etsy Open API v3.
-
-## Cómo iniciar
-
+## Ejecutar
 ```bash
 cp .env.example .env
-docker compose up --build
+./scripts/bootstrap.sh
 ```
 
-## Endpoints
+Servicios:
+- API: http://localhost:8000
+- Dashboard: http://localhost:5173
+- Qdrant: http://localhost:6333/dashboard
 
-- `GET /health`
-- `POST /jobs/create`
-- `GET /jobs/{job_id}`
-- `GET /approvals/{approval_id}`
-- `POST /approvals/{approval_id}/approve`
-- `POST /approvals/{approval_id}/reject`
-- `GET /products/master`
-- `GET /products/channels`
-
-## Ejemplo para crear job
-
+## Migraciones
 ```bash
-curl -X POST http://localhost:8000/jobs/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task_type": "publish_product",
-    "context": {
-      "sku": "TRK-001",
-      "title": "IMU Tracker Pro"
-    },
-    "constraints": {
-      "require_approval": true
-    }
-  }'
+docker compose exec api alembic upgrade head
 ```
 
-## Qué falta todavía
-
-- relaciones ORM más completas
-- Alembic con migraciones reales
-- aprobaciones generadas automáticamente por políticas
-- persistir catálogo maestro desde agentes
-- cliente real Shopify con `httpx`
-- cliente real Etsy con OAuth refresh flow
-- panel frontend de aprobaciones
-- auditoría detallada
-- integración real de Ollama / embeddings / Qdrant
-
-## Referencias de implementación
-
-La estructura está pensada para trabajar con:
-
-- SQLAlchemy ORM 2.0 style
-- Celery usando Redis como broker/backend
-- Shopify Admin GraphQL
-- Etsy Open API v3
-
+## Tests
+```bash
+pytest -q
+```

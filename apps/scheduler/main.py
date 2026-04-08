@@ -1,10 +1,6 @@
-import time
+from apps.worker.main import celery_app
 
-def main():
-    print("Scheduler placeholder started")
-    while True:
-        print("Scheduler placeholder heartbeat")
-        time.sleep(60)
 
-if __name__ == "__main__":
-    main()
+@celery_app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(1800.0, "apps.worker.tasks.collect_analytics")
