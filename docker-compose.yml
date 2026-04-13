@@ -60,7 +60,7 @@ services:
     env_file: .env
     depends_on:
       - redis
-    command: ["celery", "-A", "apps.worker.main.celery_app", "beat", "--loglevel=INFO"]
+    command: ["celery", "-A", "apps.scheduler.main.celery_app", "beat", "--loglevel=INFO"]
 
   dashboard:
     build:

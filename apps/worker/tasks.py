@@ -1,7 +1,7 @@
 from datetime import datetime
 from apps.worker.main import celery_app
 from memory.postgres.session import SessionLocal
-from memory.postgres.models import AnalyticsSnapshot, Job
+from memory.postgres.models import AnalyticsSnapshot, Approval, Job
 from orchestrator.executor import Orchestrator
 
 
@@ -16,7 +16,13 @@ def run_job_async(job_id: str) -> dict:
         db.commit()
         orchestrator = Orchestrator()
         result = orchestrator.run(job.name, job.payload, db=db, job_id=job.id)
-        job.status = "completed"
+        has_pending_approvals = (
+            db.query(Approval)
+            .filter(Approval.job_id == job.id, Approval.status == "pending")
+            .count()
+            > 0
+        )
+        job.status = "waiting_approval" if has_pending_approvals else "completed"
         db.commit()
         return result
     except Exception as exc:  # noqa: BLE001
