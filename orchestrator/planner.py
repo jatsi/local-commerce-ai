@@ -11,6 +11,7 @@ class PlanStep:
 class Planner:
     BASE_FLOW = [
         "catalog",
+        "competitor",
         "content",
         "compliance",
         "shopify",
