@@ -29,3 +29,14 @@ def test_playwright_client_extracts_title_and_price() -> None:
 
     assert client._extract_title(html) == "Super GPS Tracker"
     assert client._extract_price(html) == 29.99
+
+
+def test_competitor_agent_reads_urls_from_env(monkeypatch) -> None:
+    from agents.competitor_agent.agent import CompetitorAgent
+
+    monkeypatch.setenv("COMPETITOR_URLS", "https://a.com/p1, https://b.com/p2")
+    agent = CompetitorAgent()
+
+    urls = agent._urls_from_env()
+
+    assert urls == ["https://a.com/p1", "https://b.com/p2"]
