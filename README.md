@@ -25,6 +25,7 @@ Sistema modular multiagente para operar Shopify, Etsy, web propia, scraping de c
 - **Policy engine**: evaluación de riesgo y compliance.
 - **RAG**: recuperación contextual en Qdrant para contenido.
 - **Scraping**: Playwright vía conector encapsulado.
+- **Competitor agent**: scraping web + análisis heurístico de precio/keywords para proponer mejoras en páginas de venta.
 - **Dashboard**: React para estado de jobs/aprobaciones.
 
 ## Ejecutar
@@ -47,3 +48,6 @@ docker compose exec api alembic upgrade head
 ```bash
 pytest -q
 ```
+
+## Documento de arquitectura detallado
+- Ver `docs/arquitectura-multiagente-ecommerce.md` para la propuesta completa por capas, políticas, contratos y roadmap por fases.
