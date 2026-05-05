@@ -10,15 +10,13 @@ class PlanStep:
 
 class Planner:
     BASE_FLOW = [
-        "catalog",
-        "competitor",
-        "content",
-        "compliance",
-        "shopify",
-        "etsy",
-        "web",
-        "ads",
-        "analytics",
+        "niche_analytics",  # Agente 1
+        "ads",              # Agente 2
+        "shopify",          # Agente 3
+        "email",            # Agente 5
+        "wan_creator",      # Agente 6
+        "wan_publisher",    # Agente 7
+        "analytics",        # Cierre de performance
     ]
 
     def build(self, job_name: str) -> list[PlanStep]:
