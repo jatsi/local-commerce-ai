@@ -19,7 +19,7 @@ class ContentAgent(BaseAgent):
             f"Producto: {product}. Contexto de apoyo: {references}. "
             "Incluye una propuesta enfocada en beneficios, confianza y conversión."
         )
-        copy = self._generate_copy(prompt=prompt, product=product)
+        copy = self.ollama.generate(prompt).strip()
         return {
             "content": {
                 "title": self._optimized_title(title),
@@ -30,19 +30,6 @@ class ContentAgent(BaseAgent):
                 "title": self._optimized_title(title),
             },
         }
-
-    def _generate_copy(self, prompt: str, product: dict) -> str:
-        try:
-            generated = self.ollama.generate(prompt).strip()
-        except Exception:
-            generated = ""
-        if generated:
-            return generated
-        title = product.get("title", "este producto")
-        return (
-            f"Descubre {title}: una opción práctica, atractiva y lista para elevar tu experiencia diaria. "
-            "Su presentación está pensada para explicar beneficios rápido, generar confianza y motivar la compra."
-        )
 
     @staticmethod
     def _optimized_title(title: str) -> str:

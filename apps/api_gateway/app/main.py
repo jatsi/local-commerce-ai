@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from apps.api_gateway.app.deps import get_db
 from apps.api_gateway.app.schemas import JobCreate, ApprovalUpdate
-from memory.postgres.models import Approval, Job
+from memory.postgres.models import Approval, Job, JobStep
 from orchestrator.executor import Orchestrator
 from apps.worker.tasks import run_job_async
 
@@ -29,6 +29,49 @@ def create_job(job_data: JobCreate, db: Session = Depends(get_db)) -> dict:
 def list_jobs(db: Session = Depends(get_db)) -> list[dict]:
     jobs = db.query(Job).order_by(Job.created_at.desc()).limit(100).all()
     return [{"id": j.id, "name": j.name, "status": j.status} for j in jobs]
+
+
+@app.get("/jobs/{job_id}")
+def get_job(job_id: str, db: Session = Depends(get_db)) -> dict:
+    job = db.get(Job, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="job_not_found")
+
+    steps = (
+        db.query(JobStep)
+        .filter(JobStep.job_id == job.id)
+        .order_by(JobStep.step_order.asc())
+        .all()
+    )
+    context = job.payload.copy()
+    for step in steps:
+        context.update(step.output_data or {})
+
+    return {
+        "id": job.id,
+        "name": job.name,
+        "status": job.status,
+        "payload": job.payload,
+        "result": {
+            "job": job.name,
+            "executed": [
+                {"agent": step.agent, "result": step.output_data or {}}
+                for step in steps
+                if step.status == "completed"
+            ],
+            "context": context,
+        },
+        "steps": [
+            {
+                "id": step.id,
+                "agent": step.agent,
+                "order": step.step_order,
+                "status": step.status,
+                "output": step.output_data or {},
+            }
+            for step in steps
+        ],
+    }
 
 
 @app.post("/approvals/{approval_id}")
