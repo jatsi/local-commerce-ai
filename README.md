@@ -87,7 +87,8 @@ curl http://localhost:8000/jobs/<JOB_ID>
 4) Verifica en la respuesta `result.context` que hayan corrido estos pasos:
 - `niche_analysis` (productos tendencia por nicho)
 - `ads` (campañas Google/Facebook/TikTok + presupuesto total)
-- `shopify` (publicación de producto vía conector)
+- `content` / `product_marketing` (copy y título optimizados para Shopify)
+- `shopify` (publicación real de producto vía Admin API cuando `SHOPIFY_STORE` y `SHOPIFY_ACCESS_TOKEN` están configurados)
 - `email_support` (respuestas a inbox)
 - `wan_assets` (assets de anuncios)
 - `social_distribution` (programación en redes)
@@ -98,7 +99,7 @@ curl http://localhost:8000/jobs/<JOB_ID>
 PYTHONPATH=. pytest -q tests/unit/test_planner.py
 ```
 
-> Nota: la compra de dominio, publicación real en cuentas productivas de Ads/Shopify y subida real a redes depende de credenciales externas y conectores en modo producción.
+> Nota: la compra de dominio, publicación real en cuentas productivas de Ads y subida real a redes depende de credenciales externas y conectores en modo producción. Shopify ya llama la Admin API real y requiere `SHOPIFY_STORE`, `SHOPIFY_ACCESS_TOKEN` y opcionalmente `SHOPIFY_API_VERSION`.
 
 ## Documento de arquitectura detallado
 - Ver `docs/arquitectura-multiagente-ecommerce.md` para la propuesta completa por capas, políticas, contratos y roadmap por fases.

@@ -12,7 +12,8 @@ class Planner:
     BASE_FLOW = [
         "niche_analytics",  # Agente 1
         "ads",              # Agente 2
-        "shopify",          # Agente 3
+        "content",          # Agente 3
+        "shopify",          # Agente 4
         "email",            # Agente 5
         "wan_creator",      # Agente 6
         "wan_publisher",    # Agente 7
