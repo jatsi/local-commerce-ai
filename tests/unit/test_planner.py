@@ -7,6 +7,7 @@ def test_planner_builds_required_agents() -> None:
     assert agents == [
         "niche_analytics",
         "ads",
+        "content",
         "shopify",
         "email",
         "wan_creator",

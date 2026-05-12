@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     qdrant_collection: str = "commerce_knowledge"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1:8b"
-    shopify_store: str = "stub.myshopify.com"
+    shopify_store: str = "your-store.myshopify.com"
+    shopify_access_token: str = ""
+    shopify_api_version: str = "2026-01"
 
 
 settings = Settings()
