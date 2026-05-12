@@ -1,5 +1,6 @@
 from agents.ads_agent.agent import AdsAgent
 from agents.analytics_agent.agent import AnalyticsAgent
+from agents.content_agent.agent import ContentAgent
 from agents.email_agent.agent import EmailAgent
 from agents.niche_analytics_agent.agent import NicheAnalyticsAgent
 from agents.shopify_agent.agent import ShopifyAgent
@@ -12,6 +13,7 @@ class AgentRegistry:
         self._agents = {
             "niche_analytics": NicheAnalyticsAgent(),
             "ads": AdsAgent(),
+            "content": ContentAgent(),
             "shopify": ShopifyAgent(),
             "email": EmailAgent(),
             "wan_creator": WanCreatorAgent(),
