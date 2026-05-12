@@ -26,6 +26,7 @@ Sistema modular multiagente para operar Shopify, Etsy, web propia, scraping de c
 - **RAG**: recuperación contextual en Qdrant para contenido.
 - **Scraping**: Playwright vía conector encapsulado.
 - **Competitor agent**: scraping web + análisis heurístico de precio/keywords para proponer mejoras en páginas de venta.
+- **Analytics agent**: búsqueda automática/scraping ligero de productos mejor vendidos o tendencia en Amazon, Etsy, Shopify storefronts configurados y MercadoLibre.
 - **Dashboard**: React para estado de jobs/aprobaciones.
 
 ## Ejecutar
@@ -38,6 +39,38 @@ Servicios:
 - API: http://localhost:8000
 - Dashboard: http://localhost:5173
 - Qdrant: http://localhost:6333/dashboard
+
+
+### Discovery automático de marketplaces en Analytics
+
+El agente `analytics` ya no se limita a métricas fijas: construye búsquedas automáticas usando `niches`, `discovery_queries` o el título del producto y hace scraping ligero de resultados públicos en:
+
+- Amazon (`amazon`)
+- Etsy (`etsy`)
+- Shopify (`shopify`) mediante storefronts configurados, porque Shopify no es un marketplace único
+- MercadoLibre (`mercadolibre`)
+
+Parámetros opcionales en el payload:
+
+```json
+{
+  "discovery_queries": ["gps auto", "collares personalizados"],
+  "marketplaces": ["amazon", "etsy", "shopify", "mercadolibre"],
+  "max_products_per_marketplace": 5,
+  "shopify_discovery_stores": ["tu-tienda.myshopify.com"],
+  "marketplace_urls": {
+    "amazon": "https://www.amazon.com/s?k={query}&s=review-rank"
+  }
+}
+```
+
+También puedes configurar tiendas Shopify por entorno; si no defines `SHOPIFY_DISCOVERY_STORES`, el agente usa `SHOPIFY_STORE` como storefront principal:
+
+```dotenv
+SHOPIFY_DISCOVERY_STORES=tienda1.myshopify.com,tienda2.com
+```
+
+La respuesta de `analytics` incluye `marketplace_discovery`, `best_sellers`, `top_keywords` y un bloque `automation` con el modo `automatic_marketplace_scraping`.
 
 ## Migraciones
 ```bash
@@ -61,7 +94,7 @@ Este flujo crea un job asíncrono y lo ejecuta con el orquestador. El orden actu
 5. `email`: responde mensajes básicos de soporte.
 6. `wan_creator`: genera la metadata de assets de anuncios que ya existía en el proyecto.
 7. `wan_publisher`: agenda esos assets en canales sociales configurados.
-8. `analytics`: agrega métricas finales del flujo.
+8. `analytics`: agrega métricas finales del flujo y ejecuta discovery automático de productos vendidos/tendencia en marketplaces.
 
 > Importante: Shopify ya no responde como simulación. Si `SHOPIFY_STORE` o `SHOPIFY_ACCESS_TOKEN` no están configurados, el job falla en el paso `shopify` con un error de configuración.
 
